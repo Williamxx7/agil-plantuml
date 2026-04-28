@@ -1,0 +1,31 @@
+@startuml
+title Sekvensdiagram – Dropmekansime
+
+actor "Brandoperatør" as OP
+participant "Kommandostation\n(UI)" as UI
+participant "Dronesystem\n(Backend)" as SYS
+participant "Wi-Fi\nAccess Point" as AP
+participant "Drone\n(Hardware)" as DRONE
+
+OP -> UI : Vælg drone + klik "Drop"
+UI -> SYS : anmodDrop(droneId, område)
+
+alt Uautoriseret bruger
+    SYS --> UI : fejl: adgang nægtet
+    UI --> OP : Viser fejlbesked
+else Autoriseret bruger
+    SYS -> UI : kommandoBekræftelse()
+    UI --> OP : "Bekræft dropkommando"
+    OP -> UI : Bekræfter
+    UI -> SYS : konfimerDrop(droneId)
+    SYS -> SYS : logKommando(tidsstempel, bruger)
+    SYS -> AP : sendDropkommando(droneId)
+    AP -> DRONE : udførDrop()
+    DRONE --> AP : dropStatus (succes/fejl)
+    AP --> SYS : dropStatus
+    SYS -> SYS : logHændelse(status, tidsstempel)
+    SYS --> UI : viserStatus(dropStatus)
+    UI --> OP : Bekræftelse / fejlbesked
+end
+
+@enduml

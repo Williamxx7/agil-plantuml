@@ -1,0 +1,71 @@
+@startuml Dronesystem_Brandbekaempelse_Udvidet
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.2
+
+skinparam actor {
+  BackgroundColor #EEEEEE
+  BorderColor #333333
+  FontStyle bold
+}
+
+skinparam rectangle {
+  RoundCorner 20
+  BorderThickness 1.5
+}
+
+skinparam database {
+  BackgroundColor #FFFDE7
+  BorderColor #888888
+  FontStyle italic
+}
+
+actor "Brandoperatør"        as BO
+actor "Brand commander"      as BC
+actor "Droner (Hardware)"    as DR
+actor "Wi-Fi Access Point"   as AP
+actor "GPS-satellitter"      as GPS
+actor "Vandtank / Kemikalier" as VK
+
+database "D1: Hændelseslog"      as D1
+database "D2: GPS / Positionsdata" as D2
+database "D3: Brugertilladelser"  as D3
+
+rectangle "**P1**\nBrugeradgang &\nKommando-input" as P1 #D9D0F7
+rectangle "**P2**\nDronestyring &\nDrop-kontrol"   as P2 #F7D0C8
+rectangle "**P3**\nDatabehandling\n& Visning"       as P3 #C8EDE2
+rectangle "**P4**\nNetværk &\nForbindelsesstyring"  as P4 #CCE0F7
+
+' ── Aktører 
+BO  -->  P1 : Styrekommandoer\n(flyvning, drop, standby)
+P1  -->  BO : Videofeed / status /\nbatteristatus
+
+BC  -->  P2 : Standby-kommando /\noverordnede kommandoer
+P2  -->  BC : Overblik / rapporter
+
+DR  -->  P3 : Videofeed / GPS /\nbatteristatus
+P2  -->  DR : Flyvekommandoer /\ndropkommando
+P3  -->  DR : ACK (bekræftelse)
+
+AP  -->  P4 : Netværksforbindelse
+P4  -->  AP : Datapakker /\nkommandosignaler
+
+GPS -->  P3 : GPS-koordinater
+
+P2  -->  VK : Drop-signal\n(udløs dropmek.)
+VK  -->  P2 : Forsyningsstatus\n(fysisk feedback)
+
+' ── Proces
+P1  -->  P2 : Valideret kommando
+P1  -->  P3 : Login-status
+P3  -->  P2 : Behandlet sensordata\n(termisk, kort, GPS)
+P4  -->  P2 : Netværksstatus /\nforbindelsesadvarsel
+
+' ── Processer 
+P1  -->  D3 : Opslag:\ntjek brugertilladelse
+P2  -->  D1 : Skriv:\nlog hændelse + tidsstempel
+P3  -->  D2 : Skriv:\nGPS-positionsdata
+
+@enduml

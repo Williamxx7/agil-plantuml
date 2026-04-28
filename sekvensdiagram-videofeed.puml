@@ -1,0 +1,26 @@
+@startuml
+
+title Sekvensdiagram – Realtids videofeed
+
+actor "Brandoperatør" as OP
+participant "Kommandostation\n(UI)" as UI
+participant "Dronesystem\n(Backend)" as SYS
+participant "Wi-Fi\nAccess Point" as AP
+participant "Drone\n(Hardware)" as DRONE
+
+OP -> UI : Anmoder om videofeed
+UI -> SYS : requestVideoStream(droneId)
+SYS -> AP : forwardStreamRequest(droneId)
+AP -> DRONE : startVideoStream()
+DRONE --> AP : videoData (løbende)
+AP --> SYS : videoData (løbende)
+SYS --> UI : renderVideoFeed(videoData)
+UI --> OP : Viser realtids videofeed
+
+loop Kontinuerlig streaming
+    DRONE --> AP : videoFrame
+    AP --> SYS : videoFrame
+    SYS --> UI : updateFeed(videoFrame)
+end
+
+@enduml

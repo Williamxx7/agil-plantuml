@@ -1,0 +1,66 @@
+@startuml
+title Use Case Diagram - Dronesystem til Brandbekæmpelse
+
+left to right direction
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor "Brandoperatør" as operator
+actor "Brand commander" as commander
+actor "Wi-Fi\nAccess Point" as wifi
+
+rectangle "Dronesystem til Brandbekæmpelse" {
+
+    usecase "Log ind i systemet" as UC1
+    usecase "Se realtids videofeed" as UC2
+    usecase "Styr drone manuelt" as UC3
+    usecase "Sæt drone i standby" as UC4
+    usecase "Udløs dropmekansime" as UC5
+    usecase "Modtag batteriadvarsel" as UC7
+    usecase "Se GPS-position på kort" as UC8
+    usecase "Se termisk billede" as UC9
+    usecase "Få overblik over brandområde" as UC10
+    usecase "Modtag kritisk alarm" as UC11
+    usecase "Lokalt netværk" as UC12
+    usecase "Send kommando til drone" as UC13
+    usecase "Modtag data fra drone" as UC14
+
+    UC1 <.. UC2 : <<extend>>
+    UC1 <.. UC3 : <<extend>>
+    UC1 <.. UC10 : <<extend>>
+
+    UC3 ..> UC13 : <<include>>
+    UC5 ..> UC13 : <<include>>
+
+    UC2 ..> UC14 : <<include>>
+    UC8 ..> UC14 : <<include>>
+    UC9 ..> UC14 : <<include>>
+
+    UC7 <.. UC11 : <<extend>>
+
+    UC13 ..> UC12 : <<include>>
+    UC14 ..> UC12 : <<include>>
+}
+
+operator --> UC1
+operator --> UC2
+operator --> UC3
+operator --> UC4
+operator --> UC5
+operator --> UC7
+operator --> UC8
+operator --> UC9
+
+commander --> UC1
+commander --> UC4
+commander --> UC10
+commander --> UC11
+
+wifi --> UC12
+
+actor "Drone\n(Hardware)" as drone
+
+drone -up-> UC12
+
+@enduml

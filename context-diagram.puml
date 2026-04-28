@@ -1,0 +1,36 @@
+@startuml
+
+title Context Diagram - Dronesystem til Brandbekæmpelse
+
+left to right direction
+
+actor "Brandoperatør" as operator
+actor "Brand commander" as commander
+
+rectangle "Vandtank /\nKemikalier" as tank
+rectangle "GPS-satellitter" as gps
+
+node "Wi-Fi Access Point" as wifi
+
+rectangle "Dronesystem\nBrandbekæmpelse" as system #lightblue
+
+rectangle "Droner\n(Hardware)" as drones
+
+operator --> system : Styrekommandoer\n(flyvning, drop, standby)
+system --> operator : Videofeed / status /\nbatteristatus
+system --> commander : Videofeed / status /\nbatteristatus
+
+commander --> system : Standby-kommando /\noverordnede kommandoer
+system --> commander : Overblik / rapporter
+
+system --> drones : Flyvekommandoer /\ndropkommando
+drones --> system : Videofeed / GPS /\nbatteristatus
+
+wifi --> system : Netværksforbindelse
+system --> wifi : Datapakker /\nkommandosignaler
+
+tank --> drones : Vand / kemikalier\n(fysisk forsyning)
+
+gps --> system : GPS-koordinater
+
+@enduml
